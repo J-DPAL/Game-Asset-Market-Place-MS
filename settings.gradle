@@ -1,0 +1,5 @@
+include 'assets-service'
+include 'payments-service'
+include 'assets-transactions-service'
+include 'api-gateway'
+include 'users-service'

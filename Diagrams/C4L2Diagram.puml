@@ -1,0 +1,75 @@
+@startuml C4_Level2_GameAssetMarketplace
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_TOP_DOWN()
+SHOW_PERSON_OUTLINE()
+
+'── System Boundary ──────────────────────────────────────────────
+System_Boundary(gameAssetMarketplace, "Game Asset Marketplace") {
+
+  ' Front-end
+  Container(webUi, "Web UI", "React Single-Page App", "Browser-based storefront & admin console", $tags="browser")
+
+  ' API Gateway
+  Container(apiGateway, "API Gateway", "Spring Boot + Spring Cloud Gateway", "REST API router + HATEOAS links", $tags="microService")
+
+  ' Microservices + Databases
+  Container(userMgmtSvc, "User Management Service", "Spring Boot", "Manages users, roles, profiles", $tags="microService")
+  ContainerDb(userDb, "User DB", "MySQL", "Stores user records", $tags="storage")
+
+  Container(assetMgmtSvc, "Asset Management Service", "Spring Boot", "CRUD on game assets", $tags="microService")
+  ContainerDb(assetDb, "Asset DB", "MySQL", "Stores asset metadata", $tags="storage")
+
+  Container(paymentTxnSvc, "Payment Transactions Service", "Spring Boot", "Processes payments + transactions", $tags="microService")
+  ContainerDb(paymentDb, "Payment DB", "PostgreSQL", "Stores payment records", $tags="storage")
+
+  Container(supportSvc, "Support & Dispute Service", "Spring Boot", "Manages support tickets & disputes", $tags="microService")
+  ContainerDb(supportDb, "Support DB", "MongoDB", "Stores support tickets", $tags="storage")
+
+  Container(assetTxnSvc, "Asset Transactions Service", "Spring Boot", "Order processing + combines domain data", $tags="microService")
+  ContainerDb(orderDb, "Asset Transactions DB", "MongoDB", "Stores order & transaction records", $tags="storage")
+}
+
+'── External Systems ──────────────────────────────────────────────
+Container_Ext(paymentProcessor, "Payment Processor", "External", "Handles real-world payment processing")
+Container_Ext(cloudStorage, "Asset Storage", "e.g. AWS S3", "Stores asset files & thumbnails")
+Container_Ext(emailService, "Email Service", "SendGrid / SMTP", "Sends notifications")
+Container_Ext(supportPlatform, "Support Platform", "Zendesk / Freshdesk", "Advanced ticketing & dispute system")
+
+'── People & Paths ────────────────────────────────────────────────
+Person(admin,       "Admin",  "Manages marketplace via admin console")
+Person(seller,      "Seller", "Uploads & manages game assets")
+Person(buyer,       "Buyer",  "Browses & purchases assets")
+
+Rel(buyer,    webUi,      "Interacts over HTTPS/REST/JSON")
+Rel(seller,   webUi,      "Interacts over HTTPS/REST/JSON")
+Rel(admin,    webUi,      "Interacts over HTTPS/REST/JSON")
+
+Rel(webUi,    apiGateway, "Calls API over REST/HTTP/JSON")
+
+'── API Gateway → Services ───────────────────────────────────────
+Rel(apiGateway, userMgmtSvc,       "REST/HTTP/JSON")
+Rel(apiGateway, assetMgmtSvc,      "REST/HTTP/JSON")
+Rel(apiGateway, paymentTxnSvc,     "REST/HTTP/JSON")
+Rel(apiGateway, supportSvc,        "REST/HTTP/JSON")
+Rel(apiGateway, assetTxnSvc,       "REST/HTTP/JSON")
+
+'── Service → Database ───────────────────────────────────────────
+Rel(userMgmtSvc,   userDb,     "Reads/Writes", "JDBC/MySQL")
+Rel(assetMgmtSvc,  assetDb,    "Reads/Writes", "JDBC/MySQL")
+Rel(paymentTxnSvc, paymentDb,  "Reads/Writes", "JDBC/PostgreSQL")
+Rel(supportSvc,    supportDb,  "Reads/Writes", "MongoDB protocol")
+Rel(assetTxnSvc,   orderDb,    "Reads/Writes", "MongoDB protocol")
+
+'── Internal service interactions ─────────────────────────────────
+Rel(assetTxnSvc, userMgmtSvc,       "Fetch user details",         "REST/HTTP/JSON")
+Rel(assetTxnSvc, assetMgmtSvc,      "Fetch asset metadata",       "REST/HTTP/JSON")
+Rel(assetTxnSvc, paymentTxnSvc,     "Validate/process payments",  "REST/HTTP/JSON")
+Rel(assetTxnSvc, supportSvc,        "Link support tickets",       "REST/HTTP/JSON")
+
+'── Services → External Systems ──────────────────────────────────
+Rel(paymentTxnSvc, paymentProcessor, "Process payment",            "REST/HTTP/JSON")
+Rel(assetMgmtSvc,  cloudStorage,     "Upload/download files",      "REST/HTTP/JSON")
+Rel(userMgmtSvc,   emailService,     "Send emails",                "REST/HTTP/JSON")
+Rel(supportSvc,    supportPlatform,  "Sync tickets & disputes",    "REST/HTTP/JSON")
+@enduml

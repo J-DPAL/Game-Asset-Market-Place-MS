@@ -1,0 +1,212 @@
+@startuml
+hide circle
+top to bottom direction
+scale 0.2
+!define ENTITY(entityName) class entityName << Entity >>
+!define ENUM(enumName) class enumName << Enum >>
+!define AGGREGATE(aggregateName) class aggregateName << Aggregate >>
+!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
+!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
+!pragma useVerticalIf on
+skinparam dpi 350
+skinparam packageStyle rectangle
+skinparam rectangle {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+}
+
+rectangle "Game Asset Marketplace Context" as BoundedContextMarketplace #line.dashed {
+
+    Package "User Management Sub-Domain" as UserManagement <<Rectangle>> #LightBlue {
+       ENTITY(User) #lightpink {
+            userId: UUID
+            username: String
+            email: EmailAddress
+            phoneNumber: PhoneNumber
+            role: UserRoleEnum
+            accountCreationDate: DateTime
+        }
+
+       VALUE_OBJECT(EmailAddress) #Bisque {
+            value: String
+       }
+
+       ENUM(UserRoleEnum) {
+            ADMIN
+            SELLER
+            BUYER
+       }
+
+       VALUE_OBJECT(PhoneNumber) #Bisque {
+            phoneNumber: String
+        }
+
+
+
+       User "1" o--> "1" EmailAddress
+       User "1" o--> "1" UserRoleEnum
+       User "1" o--> "1" PhoneNumber
+    }
+
+    Package "Asset Management Sub-Domain" as AssetManagement <<Rectangle>> #LightGreen {
+       ENTITY(Asset) #lightpink {
+            assetId: UUID
+            name: String
+            description: String
+            category: AssetTypeEnum
+            price: Decimal
+            fileUrl: String
+            thumbnailUrl: String
+            licenseType: LicenseTypeEnum
+            createdAt: DateTime
+            updatedAt: DateTime
+        }
+
+       VALUE_OBJECT(AssetIdentifier) #Bisque {
+            assetId: UUID
+       }
+
+       ENUM(AssetTypeEnum) {
+           MODEL
+           TEXTURE
+           AUDIO
+           SCRIPT
+       }
+
+       ENUM(LicenseTypeEnum) {
+            ROYALTY_FREE
+            COMMERCIAL
+            PERSONAL_USE
+       }
+
+       Asset "1" o--> "1" AssetIdentifier
+    }
+
+    Package "Payment & Transactions Sub-Domain" as PaymentTransactions <<Rectangle>> #Salmon {
+       ENTITY(Transaction) #lightpink {
+            transactionId: UUID
+            userId: UUID
+            amount: Decimal
+            status: TransactionStatusEnum
+            paymentType: PaymentTypeEnum
+            transactionDate: DateTime
+        }
+
+       VALUE_OBJECT(TransactionIdentifier) #Bisque {
+            transactionId: UUID
+       }
+
+       VALUE_OBJECT(itemPrice) #Bisque {
+            currency: CurrencyTypeEnum
+            price: Decimal
+       }
+
+       ENUM(TransactionStatusEnum) {
+            PENDING
+            COMPLETED
+            FAILED
+        }
+
+       ENUM(PaymentTypeEnum) {
+            CREDIT_CARD
+            PAYPAL
+            CRYPTO
+        }
+
+       ENUM(CurrencyTypeEnum) {
+            USD
+            EUR
+            CAD
+            GBP
+       }
+
+       Transaction "1" o--> "1" TransactionIdentifier
+       Transaction "1" o--> "1" itemPrice
+    }
+
+    Package "Support & Dispute Management Sub-Domain" as SupportDisputes <<Rectangle>> #Grey {
+           ENTITY(SupportTicket) #lightpink {
+                ticketId: UUID
+                issueType: IssueTypeEnum
+                description: String
+                status: TicketStatusEnum
+                createdAt: DateTime
+                updatedAt: DateTime
+            }
+
+           VALUE_OBJECT(TicketIdentifier) #Bisque {
+                ticketId: UUID
+           }
+
+           ENUM(IssueTypeEnum) {
+                REFUND_REQUEST
+                TRANSACTION_ISSUE
+                OTHER
+           }
+
+           ENUM(TicketStatusEnum) {
+                OPEN
+                IN_PROGRESS
+                RESOLVED
+                CLOSED
+           }
+
+           SupportTicket "1" o--> "1" TicketIdentifier
+        }
+
+    Package "Asset Transactions Sub-Domain" as AssetTransactions <<Rectangle>> #Violet {
+        AGGREGATE_ROOT(Order) #lightblue {
+            orderId: UUID
+            buyerId: UUID
+            paymentId: UUID
+            assetId: UUID
+            totalAmount: OrderTotal
+            status: OrderStatusEnum
+            type: OrderType
+            discount: Discount
+        }
+
+        VALUE_OBJECT(OrderIdentifier) #Bisque {
+            orderId: UUID
+        }
+
+        VALUE_OBJECT(OrderTotal) #Bisque {
+            amount: Decimal
+            currency: CurrencyTypeEnum
+        }
+
+        ENUM(OrderStatusEnum) {
+            PENDING
+            PAID
+            CANCELED
+        }
+
+        ENUM(OrderTypeEnum) {
+            SINGLE_ASSET
+            BUNDLE
+            SUBSCRIPTION
+        }
+
+        VALUE_OBJECT(Discount) #Bisque {
+            percentage: Decimal
+            amountOff: Decimal
+            reason: String
+        }
+
+
+            note "Invariant: Must contain at least one asset and a valid payment" as Invariant1
+
+        Order "1" o--> "1" OrderIdentifier
+        Order "1" o--> "1..*" Asset
+         Order "1" o--> "1" SupportTicket
+        Order "1" o--> "1" Transaction
+        Order "1" o--> "1" User
+        Order "1" o--> "1" OrderTotal
+        Order --> OrderStatusEnum
+        Order "1" o--> "1" OrderTypeEnum
+        Order "1" o--> "0..1" Discount
+    }
+
+
+}
+@enduml

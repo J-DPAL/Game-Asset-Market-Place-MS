@@ -1,0 +1,104 @@
+# Default Profile
+server:
+  port: 7004
+  error:
+    include-message: always
+
+spring:
+  data:
+    mongodb:
+      username: user
+      password: pwd
+      host: localhost
+      port: 27017
+      database: assetTransactions-db
+      authentication-database: admin
+      auto-index-creation: true
+
+logging:
+  level:
+    root: INFO
+    pallares.gameassetmarketplace: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.mongodb.driver: DEBUG
+    org.springframework.data.mongodb.embedded: DEBUG
+
+app:
+  assets-service:
+    host: localhost
+    port: 7001
+  payments-service:
+    host: localhost
+    port: 7002
+  users-service:
+    host: localhost
+    port: 7003
+  assets-transactions-service:
+    host: localhost
+    port: 7004
+
+---
+
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  data:
+    mongodb:
+      host: localhost
+      port: 0
+      database: assetTransactions-db
+      auto-index-creation: true
+      authentication-database: admin
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 5.0.5
+
+app:
+  assets-service:
+    host: localhost
+    port: 7001
+  payments-service:
+    host: localhost
+    port: 7002
+  users-service:
+    host: localhost
+    port: 7003
+
+---
+
+# Docker Profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      username: user
+      password: pwd
+      host: mongodb
+      port: 27017
+      database: assetTransactions-db
+      authentication-database: admin
+      auto-index-creation: true
+
+server:
+  port: 8080
+
+app:
+  assets-service:
+    host: assets-service
+    port: 8081
+  payments-service:
+    host: payments-service
+    port: 8082
+  users-service:
+    host: users-service
+    port: 8083
+  assets-transactions-service:
+    host: assets-transactions-service
+    port: 8084

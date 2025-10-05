@@ -1,0 +1,30 @@
+@startuml C4_Level1_GameAssetMarketplace
+!define C4P https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include C4P
+
+' Define Persons (external users/roles)
+Person(admin, "Admin", "Manages users and marketplace configuration")
+Person(seller, "Seller", "Uploads and manages digital game assets")
+Person(buyer, "Buyer", "Browses and purchases game assets")
+
+' Define External Systems
+System_Ext(paymentService, "Payment Service", "External system for processing credit card, PayPal, and crypto payments")
+System_Ext(cloudStorage, "Asset Storage Service", "Cloud-based storage for asset files and thumbnails")
+System_Ext(emailService, "Email Service", "Handles notifications and transactional email communications")
+System_Ext(supportPlatform, "Support Platform", "External system that handles support and dispute management requests")
+
+' Define the Game Asset Marketplace as the primary system.
+System(system, "Game Asset Marketplace", "Platform for managing users, assets, transactions, support tickets, and orders")
+
+' Relationships between Users and the Marketplace
+Rel(admin, system, "Manages and configures", "Web Interface / Admin Console")
+Rel(seller, system, "Uploads assets & manages inventory", "Web/Mobile Interface")
+Rel(buyer, system, "Browses catalog and purchases assets", "Web/Mobile Interface")
+
+' Internal collaborations (aggregated for level 1 view)
+Rel(system, paymentService, "Processes transactions via", "API calls")
+Rel(system, cloudStorage, "Stores digital assets and thumbnails in", "API/Storage calls")
+Rel(system, emailService, "Sends notifications via", "SMTP/API")
+Rel(system, supportPlatform, "Creates support tickets & tracks issues in", "API/Integration")
+
+@enduml

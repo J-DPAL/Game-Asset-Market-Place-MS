@@ -1,0 +1,113 @@
+## Default Spring Profile
+app:
+  assets-service:
+    host: localhost
+    port: 7001
+  payments-service:
+    host: localhost
+    port: 7002
+  users-service:
+    host: localhost
+    port: 7003
+  assets-transactions-service:
+    host: localhost
+    port: 7004
+
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    com: DEBUG
+
+---
+## Profile: h2 (development)
+spring:
+  config:
+    activate:
+      on-profile: h2
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: assets
+          uri: http://localhost:7001
+          predicates:
+            - Path=/api/assets/**
+        - id: payments
+          uri: http://localhost:7002
+          predicates:
+            - Path=/api/payments/**
+        - id: users
+          uri: http://localhost:7003
+          predicates:
+            - Path=/api/users/**
+        - id: assets-transactions
+          uri: http://localhost:7004
+          predicates:
+            - Path=/api/assets-transactions/**
+
+server:
+  port: 7000
+
+app:
+  assets-service:
+    host: localhost
+    port: 7001
+  payments-service:
+    host: localhost
+    port: 7002
+  users-service:
+    host: localhost
+    port: 7003
+  assets-transactions-service:
+    host: localhost
+    port: 7004
+
+---
+## Profile: docker (deployment)
+spring:
+  config:
+    activate:
+      on-profile: docker
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: assets
+          uri: http://assets-service:8080
+          predicates:
+            - Path=/api/assets/**
+        - id: payments
+          uri: http://payments-service:8080
+          predicates:
+            - Path=/api/payments/**
+        - id: users
+          uri: http://users-service:8080
+          predicates:
+            - Path=/api/users/**
+        - id: assets-transactions
+          uri: http://assets-transactions-service:8080
+          predicates:
+            - Path=/api/assets-transactions/**
+
+server:
+  port: 8080
+
+app:
+  assets-service:
+    host: assets-service
+    port: 8081
+  payments-service:
+    host: payments-service
+    port: 8082
+  users-service:
+    host: users-service
+    port: 8083
+  assets-transactions-service:
+    host: assets-transactions-service
+    port: 8080

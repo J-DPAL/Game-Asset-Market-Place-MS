@@ -1,0 +1,10 @@
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('550e8400-e29b-41d4-a716-446655440000', 49.99, 'US', 'CREDIT_CARD', 'COMPLETED');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('9f8b1c2d-3a9e-4c5b-8e10-07a6a30b2b44', 19.99, 'EUR', 'PAYPAL', 'FAILED');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('c4a5e2f6-d5a3-412b-98a7-91e30e574a22', 99.50, 'GBP', 'CREDIT_CARD', 'COMPLETED');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('3d6f0a4f-4c8e-4e95-b37d-d2f7fdcfbd09', 15.00, 'CAD', 'DEBIT_CARD', 'COMPLETED');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('7b21f27d-2bb1-4e98-b62f-861d63fcdf3a', 200.75, 'US', 'CREDIT_CARD', 'PENDING');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('1eafde53-88db-40ad-8b12-519458f69b1f', 500.00, 'JPY', 'PAYPAL', 'COMPLETED');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('84d256c1-b8e2-41f3-9cd8-f5ac4e33c882', 35.99, 'EUR', 'CREDIT_CARD', 'PENDING');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('bfb79c62-063d-4e43-946a-477d8d89d281', 120.30, 'CAD', 'CRYPTO', 'FAILED');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('ee0f8e6d-5d5b-4c62-bd02-9fc282f43a3f', 75.25, 'CAD', 'CREDIT_CARD', 'COMPLETED');
+INSERT INTO payments (payment_id, price, currency, payment_type, transaction_status) VALUES ('a7f528be-7e64-4c58-8f19-d80a8b453b6d', 10.99, 'US', 'DEBIT_CARD', 'COMPLETED');
